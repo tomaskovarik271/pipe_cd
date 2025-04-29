@@ -24,20 +24,20 @@ This document outlines the proposed roadmap for building the Custom CRM System. 
 **Epics/Features:**
 
 1.  **Project Initialization & Configuration:**
-    *   [ ] Finalize monorepo structure.
-    *   [ ] Configure `netlify.toml`.
-    *   [ ] Configure Supabase locally (`supabase init`).
-    *   [ ] Set up root `package.json` with core scripts.
-    *   [ ] Set up `.gitignore`, `.env.example`.
+    *   [x] Finalize monorepo structure.
+    *   [x] Configure `netlify.toml`.
+    *   [x] Configure Supabase locally (`supabase init`).
+    *   [x] Set up root `package.json` with core scripts.
+    *   [x] Set up `.gitignore`, `.env.example`.
 2.  **Local Development Workflow:**
     *   [ ] Ensure `npm run dev` works reliably.
     *   [ ] Ensure `npm run supabase:start/stop/reset` works reliably.
-    *   [ ] Document local setup in `DEVELOPER_RUNBOOK.md`.
+    *   [x] Document local setup in `DEVELOPER_RUNBOOK.md`.
 3.  **CI/CD Pipeline Setup:**
     *   [ ] Configure GitHub Actions (or chosen provider).
     *   [ ] Implement linting and backend unit tests in CI.
     *   [ ] Configure Netlify deployment for PR previews.
-    *   [ ] Configure Netlify deployment for `main` branch to a staging environment.
+    *   [x] Configure Netlify deployment for `main` branch to a staging environment.
 4.  **Authentication Setup (Supabase Auth):**
     *   [ ] Configure Supabase Auth providers (Email minimum).
     *   [ ] Configure Supabase Auth URLs & Email templates.
@@ -57,8 +57,8 @@ This document outlines the proposed roadmap for building the Custom CRM System. 
 **Technical Tasks:**
 *   [ ] Set up ESLint/Prettier configuration.
 *   [ ] Set up basic Jest configuration for backend tests.
-*   [ ] Configure TypeScript (`tsconfig.json`) for backend/shared code.
-*   [ ] Set up Vite project for the frontend (`client/`).
+*   [x] Configure TypeScript (`tsconfig.json`) for backend/shared code.
+*   [x] Set up Vite project for the frontend (`client/`).
 
 ## Phase 2: Core CRM Entities - Organizations & Contacts (Est. ~3-5 Sprints)
 
