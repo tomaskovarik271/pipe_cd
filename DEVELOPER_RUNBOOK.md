@@ -74,19 +74,17 @@ These steps set up the basic project structure and configuration files. (Assumes
     ```bash
     mkdir -p functions/graphql-gateway functions/inngest # Add other domain functions later
     mkdir -p lib/customer-data lib/deals lib/activities # For shared backend logic/types
-    mkdir -p client/src client/public
     mkdir -p supabase/migrations
     # Add .keep files to empty directories to ensure they are committed
     touch functions/graphql-gateway/.keep functions/inngest/.keep
     touch lib/customer-data/.keep lib/deals/.keep lib/activities/.keep
-    touch client/src/.keep client/public/.keep
     ```
 
 5.  **Install Core Backend & Gateway Dependencies (Root `package.json`):**
     ```bash
     # Runtime dependencies (Stable versions)
-    npm install @apollo/server@^4 @as-integrations/netlify@^3 graphql@^16 graphql-tag@^2 # Gateway
-    npm install @supabase/supabase-js@^2 @supabase/auth-helpers-node@^1 # Supabase
+    npm install @apollo/server@^4 @as-integrations/aws-lambda graphql@^16 graphql-tag@^2 # Gateway
+    npm install @supabase/supabase-js@^2 @supabase/ssr # Supabase
     npm install inngest@^3 zod@^3 # Inngest & Validation
 
     # Development dependencies
@@ -99,8 +97,8 @@ These steps set up the basic project structure and configuration files. (Assumes
 6.  **Configure `netlify.toml`:**
     ```toml
     [build]
-      # Command to build the frontend client
-      command = "npm run build --prefix client"
+      # Command to install root deps, client deps, then build the client
+      command = "npm install && npm install --prefix client && npm run build --prefix client"
       # Output directory for the built frontend client (Vite default)
       publish = "client/dist"
       # Directory containing Netlify functions
@@ -114,7 +112,7 @@ These steps set up the basic project structure and configuration files. (Assumes
       # Port Netlify Dev serves the whole site on
       port = 8888
       # Framework detection hint (helps Netlify Dev proxying)
-      framework = "#vite"
+      framework = "vite" # Ensure no '#' prefix
       # Pass Supabase URL/Key to the frontend dev server
       env = { VITE_SUPABASE_URL = "$SUPABASE_URL", VITE_SUPABASE_ANON_KEY = "$SUPABASE_ANON_KEY" }
       # Automatically launches the browser
@@ -247,20 +245,23 @@ Follow these steps carefully to connect local development to cloud services and 
 
 1.  **Create Supabase Project (Production):** Via Supabase Dashboard. **Save the DB password securely.** Choose region carefully based on residency needs.
 2.  **Initialize Supabase Locally:** Run `supabase login` then `supabase init` in the project root.
-3.  **Start Local Supabase Instance:** Run `npm run supabase:start`. Verify Docker containers start correctly. **Troubleshooting:** Use `npm run supabase:stop` or `npm run supabase:stop:all` if port conflicts occur.
-4.  **Get Local API Credentials:** Run `npm run supabase:status`. Note the local `API URL`, `anon key`, and `service_role key`.
-5.  **Configure Local Environment (`.env`):** Run `npm run setup:env` then **populate `.env`** with the local keys from `supabase status` and your Inngest keys. Match `SUPABASE_*` and `VITE_SUPABASE_*` vars.
+3.  **Start Local Supabase Instance:** Run `npm run supabase:start`. Verify Docker containers start correctly. **Troubleshooting:**
+    *   Use `npm run supabase:stop` or `npm run supabase:stop:all` if Docker containers don't shut down properly.
+    *   **Port Conflicts:** If `supabase start` fails due to "port is already allocated", edit `supabase/config.toml` and change the conflicting port(s) (e.g., `[db].port`, `[studio].port`, `[api].port`, `[analytics].port`) to unused values (e.g., add 10 or 100 to the default). See `config.toml` for details.
+    *   **`.env` Parsing Errors:** If `supabase start` or `reset` fails with `failed to load .env` or `unexpected character`, ensure your `.env` file is correctly formatted: keys should be on a single line with no internal line breaks, especially the long Supabase/Inngest keys.
+4.  **Get Local API Credentials:** Run `npm run supabase:status`. Note the local `API URL`, `anon key`, `service_role key`. *Note: The URLs/ports shown will reflect any changes made in `config.toml`.*
+5.  **Configure Local Environment (`.env`):** Run `npm run setup:env` then **populate `.env`** with the local keys from `supabase status` and your Inngest keys. **Ensure keys are pasted without internal line breaks.** Match `SUPABASE_*` and `VITE_SUPABASE_*` vars.
 6.  **Configure Auth Providers (Production):** In Supabase Dashboard → Authentication → Providers. **Toggle ON** required providers (e.g., Email). Add required redirect URLs.
 7.  **Configure URLs (Production):** In Supabase Dashboard → Authentication → URL Configuration. Set **Site URL** (production Netlify URL) and **Redirect URLs** (add `http://localhost:8888` for Netlify Dev, plus production URL).
 8.  **Configure Email Templates (Production):** Customize as needed.
 9.  **Link Local Project (Optional but Recommended):** `supabase link --project-ref <prod-project-ref>` (requires DB password). Helps with pulling remote schema changes.
 10. **Prepare Initial Migration:** `npm run supabase:migration:new init_schema`. Add schema SQL (Section 4) to this file.
-11. **Apply Migration Locally:** `npm run supabase:reset`. Verify schema changes in local DB (Studio: `http://localhost:54323`).
+11. **Apply Migration Locally:** `npm run supabase:reset`. Verify schema changes in local DB (Studio URL from `supabase status`, e.g., `http://127.0.0.1:54333` if ports were changed).
 
 ### 3.2. Netlify Configuration
 
 1.  **Create Git Repository & Push Initial Code.**
-2.  **Create Netlify Site:** Connect Netlify to your Git repo. Configure build settings (usually auto-detected from `netlify.toml`): Command `npm run build --prefix client`, Publish dir `client/dist`, Functions dir `functions/`.
+2.  **Create Netlify Site:** Connect Netlify to your Git repo. Configure build settings (usually auto-detected from `netlify.toml`): Command `npm install && npm install --prefix client && npm run build --prefix client`, Publish dir `client/dist`, Functions dir `functions/`.
 3.  **Configure Production Env Vars:** In Netlify Site → Site configuration → Build & deploy → Environment variables. Add **Production** `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`. **Handle `SERVICE_ROLE_KEY` securely - consider storing it as a sensitive variable.** Scope appropriately (Builds, Functions, Runtime).
 4.  **Link Local Project:** `netlify link`. Connect to the created site.
 5.  **Verify Local Netlify Dev:** Run `npm run dev`. Check that Netlify Dev starts on port 8888, proxies the Vite frontend (port 5173), and serves function endpoints (`/graphql`, `/api/inngest`).
@@ -290,11 +291,11 @@ Follow these steps carefully to connect local development to cloud services and 
 
 ### 5.1. GraphQL Gateway (`functions/graphql-gateway`)
 
-*   **Server:** Use Apollo Server v4 with `@as-integrations/netlify`.
+*   **Server:** Use Apollo Server v4 with `@as-integrations/aws-lambda` (suitable for Netlify Functions).
 *   **Schema Definition:** Define schema in `.graphql` files (`schema.graphql`). Use GraphQL Code Generator (`npm run gql:codegen`) to generate TS types (`lib/gql-types.ts`).
 *   **Resolvers:** Implement resolvers (`resolvers.ts`) matching generated types.
     *   **Context (`context.ts`):** Define `MyContext` interface. Use the context function to:
-        1.  Create `supabaseClient` using `createServerClient` from `@supabase/auth-helpers-node`.
+        1.  Create `supabaseClient` using `createServerClient` from `@supabase/ssr`.
         2.  Extract JWT from `event.headers.authorization`.
         3.  **Authenticate:** Validate JWT and fetch user using `supabaseClient.auth.getUser()`. Attach `currentUser` (or null) to context.
         4.  Provide `supabaseClient` and `currentUser` to resolvers.
@@ -307,8 +308,12 @@ Follow these steps carefully to connect local development to cloud services and 
 
 ```typescript
 // Example: functions/graphql-gateway/context.ts
-import { createServerClient, type SupabaseClient, type User } from '@supabase/auth-helpers-node';
-import type { HandlerEvent } from '@netlify/functions';
+import { createServerClient, type SupabaseClient, parseCookieHeader } from '@supabase/ssr';
+import type { HandlerEvent, HandlerContext } from '@netlify/functions'; // Netlify handler types
+
+// Define Database types (e.g., generated by Supabase CLI)
+interface Database { /* ... your DB types ... */ }
+type User = import('@supabase/supabase-js').User; // Import User type
 
 // Environment Variables
 const supabaseUrl = process.env.SUPABASE_URL!;
@@ -316,31 +321,62 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
 
 // Match interface used in codegen.ts
 export interface MyContext {
-  supabaseClient: SupabaseClient;
+  supabaseClient: SupabaseClient<Database>;
   currentUser: User | null;
   // Add other context items if needed (e.g., Inngest client)
 }
 
-export async function createContext({ event }: { event: HandlerEvent }): Promise<MyContext> {
+// Context function adapted for Netlify Functions and @supabase/ssr
+export async function createContext({ event }: { event: HandlerEvent; context: HandlerContext }): Promise<MyContext> {
+  const cookies = parseCookieHeader(event.headers.cookie || '');
+  let currentUser: User | null = null;
+
   const supabaseClient = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
-    getHeader: (headerName) => event.headers[headerName.toLowerCase()],
-    // Add cookie options if needed
+    cookies: {
+      get(name: string) {
+        return cookies[name];
+      },
+      // Set/Remove are placeholders for serverless, as we rely on client-side storage
+      set(name: string, value: string, options) {
+        // console.log('Context: Set cookie', name, value, options);
+      },
+      remove(name: string, options) {
+        // console.log('Context: Remove cookie', name, options);
+      },
+    },
+    // Auth helper might need token from header if cookies aren't forwarded/used server-side
+    // auth: {
+    //   flowType: 'pkce', // Or other appropriate flow type
+    // }
   });
 
-  const { data: { user } } = await supabaseClient.auth.getUser();
+  // Prefer fetching user from Authorization header JWT for stateless API calls
+  const authHeader = event.headers.authorization;
+  const token = authHeader?.split('Bearer ')[1];
 
-  return { supabaseClient, currentUser: user };
+  if (token) {
+    const { data: { user } } = await supabaseClient.auth.getUser(token);
+    currentUser = user;
+  }
+  // Fallback: attempt to get user from cookies if no header present (less common for API routes)
+  else {
+     const { data: { user } } = await supabaseClient.auth.getUser();
+     currentUser = user;
+  }
+
+
+  return { supabaseClient, currentUser };
 }
 ```
 
 ```typescript
 // Example: functions/graphql-gateway/graphql-gateway.ts (Handler setup)
 import { ApolloServer } from '@apollo/server';
-import { startServerAndCreateNetlifyHandler } from '@as-integrations/netlify';
+import { startServerAndCreateLambdaHandler, handlers } from '@as-integrations/aws-lambda';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { resolvers } from './resolvers'; // Implement resolvers
-import { createContext, MyContext } from './context';
+import { createContext, MyContext } from './context'; // Ensure context import is correct
 
 // Load schema generated by codegen or defined manually
 const typeDefs = readFileSync(path.join(__dirname, 'schema.graphql'), 'utf8');
@@ -349,11 +385,26 @@ const server = new ApolloServer<MyContext>({
   typeDefs,
   resolvers,
   introspection: process.env.NODE_ENV !== 'production',
+  // Add plugins for security etc. here if needed
 });
 
-export const handler = startServerAndCreateNetlifyHandler(server, {
-  context: createContext,
-});
+// Create the handler using the Lambda integration
+// Choose the appropriate request handler (REST API, HTTP API V2, Application Load Balancer)
+// Netlify typically uses something similar to REST API or HTTP API payload format
+// Using handlers.createAPIGatewayProxyEventV2RequestHandler() is often a good starting point
+export const handler = startServerAndCreateLambdaHandler(
+    server,
+    // Provide lambda specific handlers and options if needed
+    {
+        // Example using HTTP API V2 format handler
+        handler: new handlers.createAPIGatewayProxyEventV2RequestHandler(),
+        context: createContext, // Pass your context creation function
+    }
+);
+
+// If the above doesn't work directly, you might need a more manual setup
+// adapting the Netlify event/context to the Lambda handler expectations.
+// See Apollo and @as-integrations/aws-lambda docs for details.
 ```
 
 ### 5.2. Backend Logic Modules (`lib/`)
@@ -415,22 +466,31 @@ export async function createOrganizationLogic(
 ### 5.3. Frontend (`client/`)
 
 *   **Setup:** Initialize as a Vite project: `npm create vite@latest client --template react-ts`.
-*   **Dependencies:** Install dependencies within the `client/` directory: `npm install @apollo/client graphql @chakra-ui/react @emotion/react @emotion/styled framer-motion @supabase/auth-helpers-react @supabase/supabase-js react-router-dom` and dev deps (`@graphql-codegen/cli`, etc. if managing codegen separately).
+    *   **Troubleshooting:** If the `client` directory already exists (e.g., from initial setup), Vite will prompt. Either choose "Remove existing files" or manually `rm -rf client` before running the command.
+*   **Dependencies:** Install base dependencies via Vite init. Then, install required project dependencies within the `client/` directory:
+    ```bash
+    cd client
+    npm install @apollo/client graphql @chakra-ui/react @emotion/react @emotion/styled framer-motion @supabase/auth-helpers-react @supabase/supabase-js react-router-dom
+    # Install necessary dev dependencies if needed (e.g., for testing)
+    npm install -D @testing-library/react @testing-library/jest-dom vitest happy-dom
+    cd ..
+    ```
 *   **API Client:** Use Apollo Client (`@apollo/client`). Configure `ApolloProvider` and client instance in `src/main.tsx` (Vite entry point) or a dedicated `src/apollo-client.ts`.
-*   **Authentication Link (`src/apollo-client.ts`):** Use `@apollo/client/link/context` to set the `Authorization` header. **Crucially, fetch the Supabase session *asynchronously* within the `setContext` function** before returning headers.
+*   **Authentication Link (`src/apollo-client.ts`):** Use `@apollo/client/link/context` to set the `Authorization` header. **Crucially, fetch the Supabase session *asynchronously* within the `setContext` function** before returning headers. *Note: `@supabase/auth-helpers-react` often provides context/hooks to manage this.*
 
 ```typescript
-// Example: client/src/apollo-client.ts
+// Example: client/src/apollo-client.ts (Illustrative - adapt based on chosen Supabase helper)
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { supabase } from './supabase-client'; // Your Supabase client instance
+import { supabase } from './supabase-client'; // Your Supabase client instance (setup separately)
 
 const httpLink = createHttpLink({
   uri: '/graphql', // Netlify Dev proxies this
 });
 
 const authLink = setContext(async (_, { headers }) => {
-  // Get the *current* session async
+  // Get the *current* session async - specific method might vary
+  // depending on how @supabase/auth-helpers-react or @supabase/ssr client is used
   const { data: { session } } = await supabase.auth.getSession();
   const token = session?.access_token;
 
@@ -532,7 +592,7 @@ export const client = new ApolloClient({
 3.  **Get/Update Local Keys:** `npm run supabase:status` -> Update `.env` with Supabase & Inngest keys.
 4.  **Schema Changes:** Create migration (`npm run supabase:migration:new <name>`), edit SQL file, apply (`npm run supabase:reset`).
 5.  **Start Dev Server:** `npm run dev`.
-6.  **Access:** Frontend (`http://localhost:5173`), Full Site/Gateway (`http://localhost:8888`), GraphQL (`http://localhost:8888/graphql`), Supabase Studio (`http://localhost:54323`).
+6.  **Access:** Frontend (`http://localhost:5173`), Full Site/Gateway (`http://localhost:8888`), GraphQL (`http://localhost:8888/graphql`), Supabase Studio (URL from `npm run supabase:status`, e.g., `http://127.0.0.1:54333`).
 7.  **GraphQL Changes:** Modify `schema.graphql`, run `npm run gql:codegen`.
 8.  **Code & Test:** Implement features in `client/`, `lib/`, `functions/`. Write corresponding tests.
 9.  **Run Tests:** `npm test` (backend), `npm test --prefix client` (frontend).
@@ -575,7 +635,7 @@ export const client = new ApolloClient({
 
 ## Appendix B: Useful Commands
 
-*(Updated with codegen, typecheck, migration commands)*
+*(Updated with codegen, typecheck, migration commands, client deps)*
 
 ```bash
 # Install all dependencies (root and client)
@@ -585,9 +645,12 @@ npm install && npm install --prefix client
 npm run setup:env
 
 # Start local development environment (Supabase + Netlify Dev)
-npm run supabase:start && npm run dev
+# Ensure Docker is running. Run Supabase first.
+npm run supabase:start
+npm run dev
 
 # Stop local development environment
+npm run dev # (Stop this first in its terminal - Ctrl+C)
 npm run supabase:stop # Or supabase:stop:all
 
 # Reset local database and apply all migrations
@@ -599,8 +662,16 @@ npm run supabase:status
 # Create a new database migration file
 npm run supabase:migration:new <migration_name>
 
-# Link local project to Netlify site (run once)
+# Link local project to Netlify site (run once, after creating site on Netlify)
 netlify link
+
+# Initialize Vite client project (if not done)
+# May need to 'rm -rf client' first if placeholder exists
+npm create vite@latest client --template react-ts
+npm install --prefix client # Install client deps
+
+# Install specific client dependencies
+npm install --prefix client @apollo/client graphql @chakra-ui/react @emotion/react @emotion/styled framer-motion @supabase/auth-helpers-react @supabase/supabase-js react-router-dom
 
 # Run linters
 npm run lint
