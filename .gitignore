@@ -12,7 +12,10 @@ client/node_modules/
 .vscode/
 *.DS_Store
 
+# Generated Files
+lib/gql-types.ts
+
 # Project Documentation
-PROJECT_ROADMAP.md
-DEVELOPER_RUNBOOK.md
-ADR.md 
+# PROJECT_ROADMAP.md
+# DEVELOPER_RUNBOOK.md
+# ADR.md 
