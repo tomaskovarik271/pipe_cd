@@ -10,4 +10,9 @@ supabase/.temp/
 client/dist/
 client/node_modules/
 .vscode/
-*.DS_Store 
+*.DS_Store
+
+# Project Documentation
+PROJECT_ROADMAP.md
+DEVELOPER_RUNBOOK.md
+ADR.md 
