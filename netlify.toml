@@ -14,7 +14,7 @@
   # Port Netlify Dev serves the whole site on
   port = 8888
   # Framework detection hint (helps Netlify Dev proxying)
-  framework = "#vite"
+  framework = "vite"
   # Pass Supabase URL/Key to the frontend dev server
   env = { VITE_SUPABASE_URL = "$SUPABASE_URL", VITE_SUPABASE_ANON_KEY = "$SUPABASE_ANON_KEY" }
   # Automatically launches the browser
