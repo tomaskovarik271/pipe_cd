@@ -1,0 +1,50 @@
+[build]
+  # Command to build the frontend client
+  command = "npm run build --prefix client"
+  # Output directory for the built frontend client (Vite default)
+  publish = "client/dist"
+  # Directory containing Netlify functions
+  functions = "functions/"
+
+[dev]
+  # Command to run the frontend development server (Vite)
+  command = "npm run dev --prefix client"
+  # Port the frontend dev server runs on (Default Vite port)
+  targetPort = 5173
+  # Port Netlify Dev serves the whole site on
+  port = 8888
+  # Framework detection hint (helps Netlify Dev proxying)
+  framework = "#vite"
+  # Pass Supabase URL/Key to the frontend dev server
+  env = { VITE_SUPABASE_URL = "$SUPABASE_URL", VITE_SUPABASE_ANON_KEY = "$SUPABASE_ANON_KEY" }
+  # Automatically launches the browser
+  autoLaunch = true
+
+# Proxy requests to /graphql to the gateway function
+[[redirects]]
+  from = "/graphql"
+  to = "/.netlify/functions/graphql-gateway"
+  status = 200 # Use 200 for function proxies
+
+# Proxy requests to /api/inngest to the inngest handler function
+[[redirects]]
+  from = "/api/inngest"
+  to = "/.netlify/functions/inngest"
+  status = 200
+
+# SPA fallback: Route all other requests to index.html for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Global function settings
+[functions]
+  # Use esbuild for faster bundling
+  node_bundler = "esbuild"
+  # Optional: Increase default timeout for specific functions if needed
+  # "graphql-gateway" = { timeout = 15 }
+
+# Set Node.js version for all functions (Use LTS)
+[functions."*"]
+  node_version = "18" 

@@ -1,0 +1,24 @@
+// tsconfig.json (Example for backend/shared code)
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS", // Or ESNext if using ESM
+    "lib": ["ES2020"],
+    "outDir": "./dist", // Or adjust as needed, may not be strictly necessary for functions
+    "rootDir": ".", // Include root for scripts, adjust if needed
+    "baseUrl": ".",
+    "paths": { // Optional: For path aliases if using
+      "@lib/*": ["lib/*"]
+    },
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true // Often needed for bundlers
+    // Add other options as needed (e.g., sourceMap)
+  },
+  "include": ["lib/**/*.ts", "functions/**/*.ts", "scripts/**/*.ts"], // Adjust paths
+  "exclude": ["node_modules", "client", "dist", "supabase"]
+} 

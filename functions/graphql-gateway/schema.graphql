@@ -1,0 +1,9 @@
+# Placeholder Schema
+
+type Query {
+  hello: String
+}
+
+type Mutation {
+  noop: String # Placeholder mutation
+} 

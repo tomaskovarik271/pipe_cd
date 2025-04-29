@@ -1,0 +1,13 @@
+node_modules/
+.env*
+!.env.example
+.netlify/
+dist/
+build/
+coverage/
+*.log
+supabase/.temp/
+client/dist/
+client/node_modules/
+.vscode/
+*.DS_Store 
