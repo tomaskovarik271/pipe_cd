@@ -1,6 +1,6 @@
 [build]
-  # Command to build the frontend client
-  command = "npm run build --prefix client"
+  # Command to install root deps, client deps, then build the client
+  command = "npm install && npm install --prefix client && npm run build --prefix client"
   # Output directory for the built frontend client (Vite default)
   publish = "client/dist"
   # Directory containing Netlify functions
