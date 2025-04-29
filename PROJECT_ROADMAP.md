@@ -30,9 +30,9 @@ This document outlines the proposed roadmap for building the Custom CRM System. 
     *   [x] Set up root `package.json` with core scripts.
     *   [x] Set up `.gitignore`, `.env.example`.
 2.  **Local Development Workflow:**
-    *   [ ] Ensure `npm run dev` works reliably.
-    *   [ ] Ensure `npm run supabase:start/stop/reset` works reliably.
-    *   [x] Document local setup in `DEVELOPER_RUNBOOK.md`.
+    *   [x] Ensure `npm run dev` works reliably.
+    *   [x] Ensure `npm run supabase:start/stop/reset` works reliably.
+    *   [ ] Document local setup in `DEVELOPER_RUNBOOK.md`.
 3.  **CI/CD Pipeline Setup:**
     *   [ ] Configure GitHub Actions (or chosen provider).
     *   [ ] Implement linting and backend unit tests in CI.
