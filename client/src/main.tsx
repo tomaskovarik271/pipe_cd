@@ -6,7 +6,8 @@ import { ApolloProvider } from '@apollo/client'
 // import { ChakraProvider } from '@chakra-ui/react' // Temporarily remove Chakra
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react' // Import defaultSystem for v3
 import { client } from '@/apollo-client.ts' // Import our Apollo client using Vite alias
-import { AuthProvider } from './context/AuthContext' // Import AuthProvider
+// import { AuthProvider } from './context/AuthContext' // Import AuthProvider -- Use alias
+import { AuthProvider } from '@/context/AuthContext' // Import AuthProvider using Vite alias
 // We are not using Supabase provider directly here, auth state is handled via client/hooks
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
