@@ -2,26 +2,19 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { ApolloProvider } from '@apollo/client'
-// import { ChakraProvider } from '@chakra-ui/react' // Temporarily remove Chakra
-import { ChakraProvider, defaultSystem } from '@chakra-ui/react' // Import defaultSystem for v3
-import { client } from '@/apollo-client.ts' // Import our Apollo client using Vite alias
-// import { AuthProvider } from './context/AuthContext' // Import AuthProvider -- Use alias
-import { AuthProvider } from '@/context/AuthContext' // Import AuthProvider using Vite alias
-// We are not using Supabase provider directly here, auth state is handled via client/hooks
+// import { ApolloProvider } from '@apollo/client' // Comment out for build test
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
+// import { client } from '@/apollo-client.ts' // Comment out for build test
+// import { AuthProvider } from '@/context/AuthContext' // Comment out for build test
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <AuthProvider> {/* Wrap with AuthProvider */}
-      <ApolloProvider client={client}>
-        {/* <ChakraProvider> */}
+    {/* <AuthProvider> */}{/* Comment out for build test */}
+      {/* <ApolloProvider client={client}> */}{/* Comment out for build test */}
         <ChakraProvider value={defaultSystem}>
-        {/* TODO: Re-enable ChakraProvider. Currently commented out due to persistent type errors */}
-        {/* (likely related to React 18/19 types or library incompatibilities). See DEVELOPER_RUNBOOK.md Section 5.3 */}
           <App />
-        {/* </ChakraProvider> */}
         </ChakraProvider>
-      </ApolloProvider>
-    </AuthProvider> {/* Close AuthProvider */}
+      {/* </ApolloProvider> */}{/* Comment out for build test */}
+    {/* </AuthProvider> */}{/* Comment out for build test */}
   </React.StrictMode>,
 )
