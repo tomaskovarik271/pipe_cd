@@ -2,29 +2,29 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-// import { ApolloProvider } from '@apollo/client' // Comment out for build test
+import { ApolloProvider } from '@apollo/client'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
-// import { client } from '@/apollo-client.ts' // Comment out for build test
-// import { AuthProvider } from '@/context/AuthContext.tsx' // Comment out for build test
+import { client } from '@/apollo-client.ts'
+import { AuthProvider } from '@/context/AuthContext.tsx'
 // import { supabase } from '@/supabase-client.ts'; // Remove direct supabase import
-import { useAuth } from '@/hooks/useAuth.tsx'; // Import useAuth hook directly
+// import { useAuth } from '@/hooks/useAuth.tsx'; // Remove direct useAuth import
 
-// Temporary component to test useAuth hook
-const AuthTester: React.FC = () => {
-  const { session, loading } = useAuth();
-  console.log('AuthTester:', { session, loading });
-  return null; // Don't render anything
-};
+// Remove temporary component
+// const AuthTester: React.FC = () => {
+//   const { session, loading } = useAuth();
+//   console.log('AuthTester:', { session, loading });
+//   return null; // Don't render anything
+// };
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* <AuthProvider> */}{/* Comment out for build test */}
-      {/* <ApolloProvider client={client}> */}{/* Comment out for build test */}
+    <AuthProvider> {/* Restore AuthProvider */}
+      <ApolloProvider client={client}> {/* Restore ApolloProvider */}
         <ChakraProvider value={defaultSystem}>
-          <AuthTester /> { /* Render the tester component */}
+          {/* <AuthTester /> */}{/* Remove tester component */}
           <App />
         </ChakraProvider>
-      {/* </ApolloProvider> */}{/* Comment out for build test */}
-    {/* </AuthProvider> */}{/* Comment out for build test */}
+      </ApolloProvider> {/* Restore ApolloProvider */}
+    </AuthProvider> {/* Restore AuthProvider */}
   </React.StrictMode>,
 )
