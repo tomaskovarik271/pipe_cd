@@ -490,9 +490,9 @@ export async function createOrganizationLogic(
 *   **Dependencies:** Install base dependencies via Vite init. Then, install required project dependencies within the `client/` directory:
     ```bash
     cd client
-    npm install @apollo/client graphql @chakra-ui/react @emotion/react @emotion/styled framer-motion @supabase/auth-helpers-react @supabase/supabase-js react-router-dom
+    npm install @apollo/client@^3 @chakra-ui/react@^3 @emotion/react@^11 @supabase/ssr react-router-dom@^6 graphql@^16
     # Install necessary dev dependencies if needed (e.g., for testing)
-    npm install -D @testing-library/react @testing-library/jest-dom vitest happy-dom
+    npm install -D @types/react@^18 @types/react-dom@^18 ...
     cd ..
     ```
 *   **API Client:** Use Apollo Client (`@apollo/client`). Configure `ApolloProvider` and client instance in `src/main.tsx` (Vite entry point) or a dedicated `src/apollo-client.ts`.
@@ -534,6 +534,41 @@ export const client = new ApolloClient({
 *   **State Management:** Use Apollo Client cache for server state. Zustand or Jotai are good lightweight options for global UI state if React Context becomes unwieldy.
 *   **Environment Variables:** Access `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` via `import.meta.env.VITE_...`. Ensure they are populated in the root `.env` file.
 *   **Testing:** Use Vitest (Vite's testing framework) with React Testing Library (`@testing-library/react`). Add `npm test --prefix client` scripts to root `package.json`.
+
+### 5.4. Chakra UI v3 Setup & Troubleshooting
+
+During initial setup, we encountered TypeScript errors when trying to wrap the application with `<ChakraProvider>` in `client/src/main.tsx`. The error typically looked like: `Property 'children' does not exist on type 'IntrinsicAttributes & ChakraProviderProps'`.
+
+**Root Cause:** We had installed `@chakra-ui/react@^3`, which is the newer **Chakra UI v3**. This version introduced breaking changes compared to v2, particularly around the provider setup.
+
+**Key Changes & Fixes for v3:**
+
+1.  **Dependencies:** Chakra UI v3 **does not** require `@emotion/styled` or `framer-motion`. These were uninstalled:
+    ```bash
+    npm uninstall --prefix client @emotion/styled framer-motion
+    ```
+2.  **Provider Setup (`client/src/main.tsx`):**
+    *   The `<ChakraProvider>` component no longer accepts a `theme` prop.
+    *   It now requires a `value` prop, which expects a `system` object.
+    *   The fix involves importing `defaultSystem` from `@chakra-ui/react` and passing it to the `value` prop:
+
+    ```typescript
+    // client/src/main.tsx (Relevant parts)
+    import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
+    // ... other imports
+
+    ReactDOM.createRoot(document.getElementById('root')!).render(
+      <React.StrictMode>
+        <ApolloProvider client={client}>
+          <ChakraProvider value={defaultSystem}> {/* <-- Correct v3 setup */}
+            <App />
+          </ChakraProvider>
+        </ApolloProvider>
+      </React.StrictMode>,
+    );
+    ```
+
+*Refer to the [Chakra UI v3 Migration Guide](https://www.chakra-ui.com/docs/get-started/migration) for more details on v2 to v3 changes.*
 
 ## 6. Security Practices
 
