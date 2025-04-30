@@ -5,22 +5,26 @@ import './index.css'
 // import { ApolloProvider } from '@apollo/client' // Comment out for build test
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 // import { client } from '@/apollo-client.ts' // Comment out for build test
-import { AuthProvider } from '@/context/AuthContext.tsx' // Re-introduce AuthProvider
-// import { DUMMY_MESSAGE } from '@/dummy.ts'; // Remove dummy import
-import { supabase } from '@/supabase-client.ts'; // Import supabase client directly
+// import { AuthProvider } from '@/context/AuthContext.tsx' // Comment out for build test
+// import { supabase } from '@/supabase-client.ts'; // Remove direct supabase import
+import { useAuth } from '@/hooks/useAuth.tsx'; // Import useAuth hook directly
 
-// Log the dummy message to ensure it's used and not tree-shaken too early
-// console.log(DUMMY_MESSAGE); // Remove dummy log
-// console.log(supabase); // Remove test log
+// Temporary component to test useAuth hook
+const AuthTester: React.FC = () => {
+  const { session, loading } = useAuth();
+  console.log('AuthTester:', { session, loading });
+  return null; // Don't render anything
+};
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <AuthProvider> {/* Re-introduce AuthProvider */}
+    {/* <AuthProvider> */}{/* Comment out for build test */}
       {/* <ApolloProvider client={client}> */}{/* Comment out for build test */}
         <ChakraProvider value={defaultSystem}>
+          <AuthTester /> { /* Render the tester component */}
           <App />
         </ChakraProvider>
       {/* </ApolloProvider> */}{/* Comment out for build test */}
-    </AuthProvider> {/* Re-introduce AuthProvider */}
+    {/* </AuthProvider> */}{/* Comment out for build test */}
   </React.StrictMode>,
 )
