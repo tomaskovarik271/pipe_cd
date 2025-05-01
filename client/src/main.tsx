@@ -2,10 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { ApolloProvider } from '@apollo/client'
+// import { ApolloProvider } from '@apollo/client' // Temporarily comment out
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
-import { client } from '@/apollo-client.ts'
-import { AuthProvider } from '@/context/AuthContext.tsx'
+// import { client } from '@/apollo-client.ts' // Temporarily comment out
+// import { AuthProvider } from '@/context/AuthContext.tsx' // Temporarily comment out
 // import { supabase } from '@/supabase-client.ts'; // Remove direct supabase import
 // import { useAuth } from '@/hooks/useAuth.tsx'; // Remove direct useAuth import
 
@@ -18,13 +18,13 @@ import { AuthProvider } from '@/context/AuthContext.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <AuthProvider> {/* Restore AuthProvider */}
-      <ApolloProvider client={client}> {/* Restore ApolloProvider */}
+    {/* <AuthProvider> */}{/* Temporarily comment out */}
+      {/* <ApolloProvider client={client}> */}{/* Temporarily comment out */}
         <ChakraProvider value={defaultSystem}>
           {/* <AuthTester /> */}{/* Remove tester component */}
           <App />
         </ChakraProvider>
-      </ApolloProvider> {/* Restore ApolloProvider */}
-    </AuthProvider> {/* Restore AuthProvider */}
+      {/* </ApolloProvider> */}{/* Temporarily comment out */}
+    {/* </AuthProvider> */}{/* Temporarily comment out */}
   </React.StrictMode>,
 )
