@@ -2,37 +2,40 @@
 // import reactLogo from './assets/react.svg' // No longer needed
 // import viteLogo from '/vite.svg' // No longer needed
 import './App.css'
+import { LoginForm } from '@/components/Auth/LoginForm'; // Use alias
+import { SignupForm } from '@/components/Auth/SignupForm'; // Use alias
+// Import useAuthContext when providers are re-enabled
+// import { useAuthContext } from '@/context/AuthContext'; 
 
 function App() {
-  // const [count, setCount] = useState(0) // Remove counter state
+  // const { session, loading } = useAuthContext(); // Get auth state when ready
+
+  // Placeholder logic - replace with actual check on session/loading
+  const isLoggedIn = false; // Simulate logged out state for now
+  const isLoading = false; // Simulate loading finished
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Basic loading indicator
+  }
 
   return (
     <>
       <h1>Custom CRM App</h1>
-      <p>Content will go here.</p>
-      {/* Remove default Vite content */}
-      {/*
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      */}
+      
+      {isLoggedIn ? (
+        <div>
+          <p>Welcome! You are logged in.</p>
+          {/* TODO: Add Logout button */}
+          {/* TODO: Add main application content/routing here */}
+        </div>
+      ) : (
+        <div>
+          <p>Please log in or sign up:</p>
+          <LoginForm />
+          <hr />
+          <SignupForm />
+        </div>
+      )}
     </>
   )
 }
