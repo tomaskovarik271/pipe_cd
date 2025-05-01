@@ -1,6 +1,6 @@
 [build]
-  # Command to install root deps, client deps, then build the client
-  command = "npm install && npm install --prefix client && cd client && npx vite build && cd .."
+  # Command to install root deps, clean client deps, install client deps, then build client
+  command = "npm install && rm -rf client/node_modules client/package-lock.json && npm install --prefix client && cd client && npx vite build && cd .."
   # Output directory for the built frontend client (Vite default)
   publish = "client/dist"
   # Directory containing Netlify functions
