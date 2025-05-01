@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { supabase } from './supabase-client'; // Removed .ts extension
+import { supabase } from '@/supabase-client'; // Changed to alias
 
 const httpLink = createHttpLink({
   // Use the relative path defined in netlify.toml redirects

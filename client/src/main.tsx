@@ -4,8 +4,8 @@ import App from './App.tsx'
 import './index.css'
 import { ApolloProvider } from '@apollo/client'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
-import { client } from './apollo-client'
-import { AuthProvider } from './context/AuthContext'
+import { client } from '@/apollo-client'
+import { AuthProvider } from '@/context/AuthContext'
 // import { supabase } from '@/supabase-client.ts'; // Keep commented out
 // import { useAuth } from '@/hooks/useAuth.tsx'; // Keep commented out
 
