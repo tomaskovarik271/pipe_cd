@@ -14,9 +14,10 @@ This document outlines the proposed roadmap for building the Custom CRM System. 
 ## Phase 1: Foundation & Core Setup (Est. ~2-4 Sprints)
 
 **Goal:** Establish the core technical foundation, local development workflow, CI/CD pipeline, and basic authentication.
+*Note: An ongoing Netlify build issue currently prevents deployment of full authentication and GraphQL client integration (See RUNBOOK Section 5.5). Providers are temporarily commented out in `main.tsx`.*
 
 **Key Milestones:**
-*   Local development environment fully functional (`netlify dev`, `supabase start`).
+*   [x] Local development environment fully functional (`netlify dev`, `supabase start`).
 *   Basic CI/CD pipeline operational (lint, test, deploy PR previews, deploy main to staging).
 *   Users can sign up, log in, and log out.
 *   GraphQL Gateway operational with basic schema and authentication.
@@ -41,15 +42,15 @@ This document outlines the proposed roadmap for building the Custom CRM System. 
 4.  **Authentication Setup (Supabase Auth):**
     *   [ ] Configure Supabase Auth providers (Email minimum).
     *   [ ] Configure Supabase Auth URLs & Email templates.
-    *   [ ] Implement basic SignUp/Login/Logout UI components in the frontend (Vite/React).
-    *   [ ] Implement Supabase JS client setup in frontend.
-    *   [ ] Integrate Auth state with frontend routing (protected routes).
+    *   [ ] Implement basic SignUp/Login/Logout UI components in the frontend (Vite/React). (Placeholders created)
+    *   [x] Implement Supabase JS client setup in frontend. (`@supabase/ssr` installed, `supabase-client.ts` created)
+    *   [ ] Integrate Auth state with frontend routing (protected routes). (Blocked by build issue)
 5.  **GraphQL Gateway Foundation:**
-    *   [ ] Set up Apollo Server on Netlify Function (`functions/graphql-gateway`).
-    *   [ ] Implement JWT authentication check in Apollo Server context.
-    *   [ ] Define initial GraphQL schema (placeholder types, basic User query).
-    *   [ ] Set up Apollo Client in the frontend (including auth link).
-    *   [ ] Implement basic authenticated query from frontend (e.g., `getCurrentUser`).
+    *   [x] Set up Apollo Server on Netlify Function (`functions/graphql-gateway`). (Manual handler implemented)
+    *   [x] Implement JWT authentication check in Apollo Server context.
+    *   [x] Define initial GraphQL schema (placeholder types, basic User query).
+    *   [x] Set up Apollo Client in the frontend (including auth link). (`apollo-client.ts` created)
+    *   [ ] Implement basic authenticated query from frontend (e.g., `getCurrentUser`). (Blocked by build issue)
 6.  **Initial Database Schema & Migrations:**
     *   [ ] Create initial Supabase migration (`init_schema.sql`) for `users` table extensions (if needed) and basic RLS policy.
     *   [ ] Document migration process.
