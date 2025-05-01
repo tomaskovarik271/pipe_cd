@@ -42,7 +42,7 @@ This document outlines the proposed roadmap for building the Custom CRM System. 
 4.  **Authentication Setup (Supabase Auth):**
     *   [ ] Configure Supabase Auth providers (Email minimum).
     *   [ ] Configure Supabase Auth URLs & Email templates.
-    *   [ ] Implement basic SignUp/Login/Logout UI components in the frontend (Vite/React). (Placeholders created)
+    *   [~] Implement basic SignUp/Login/Logout UI components in the frontend (Vite/React). (Login/Signup implemented)
     *   [x] Implement Supabase JS client setup in frontend. (`@supabase/ssr` installed, `supabase-client.ts` created)
     *   [ ] Integrate Auth state with frontend routing (protected routes). (Blocked by build issue)
 5.  **GraphQL Gateway Foundation:**
