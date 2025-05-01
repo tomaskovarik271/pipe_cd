@@ -52,7 +52,7 @@ function App() {
           <Button 
             mt={4} 
             onClick={handleLogout} 
-            isLoading={logoutLoading} 
+            loading={logoutLoading}
             colorScheme="red"
           >
             Log Out
