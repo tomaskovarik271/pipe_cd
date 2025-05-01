@@ -597,3 +597,29 @@ To allow Netlify deployments/previews to succeed for other parts of the applicat
 *   **RLS:** Apply Supabase Row Level Security policies as a fundamental security layer in the database. **Test RLS policies thoroughly.**
 *   **Secrets Management:**
     *   Use `.env`
+
+### 6.2. Frontend Build & Deployment Troubleshooting (Netlify)
+
+*   **Initial Build Failures (Setup Phase):**
+    *   Ensure `client/package.json` exists and is committed.
+    *   Ensure `netlify.toml` build command includes `npm install` for both root and `client` (`npm install && npm install --prefix client && npm run build --prefix client`).
+
+*   **Persistent `ENOENT` / `Could not resolve` Build Errors (During Development):**
+    *   **Symptom:** Netlify build fails with errors like `ENOENT: no such file or directory` or `Could not resolve './path/to/module'` for files (e.g., `apollo-client.ts`, `AuthContext.tsx`) imported within the client application, even though the build works locally.
+    *   **Investigation:**
+        *   Initial troubleshooting focused on import paths (relative vs. alias `@/...`, with/without extensions) and Vite configuration (`ssr.noExternal`, `allowImportingTsExtensions`, `moduleResolution: 'bundler'`). These changes did not resolve the core issue.
+        *   A React 18 vs 19 peer dependency conflict was identified (`ERESOLVE` warnings in build logs) due to `@apollo/client` and `@chakra-ui/react` requiring React 18 while React 19 was installed. This was resolved by ensuring React 18 was specified in `client/package.json` and forcing a clean install in the Netlify build command (`rm -rf client/node_modules client/package-lock.json && npm install --prefix client`).
+    *   **Root Cause:** The primary cause appeared to be that critical source files (`apollo-client.ts`, `AuthContext.tsx`, `useAuth.tsx`) were not correctly tracked by Git and therefore missing in the Netlify build environment. `git status` or `git add .` might not have caught untracked files in subdirectories if `.gitignore` was overly broad or if files were added after initial commits without explicit `git add <path>`. Git reporting `create mode` for these files during later commits confirmed they were newly tracked.
+    *   **Resolution:**
+        1.  Verify all necessary source files within `client/src/` are correctly added and committed to Git (`git add client/src/<path>/<file>` and `git commit`).
+        2.  Use consistent import aliases (`@/...`) for imports within the `client/src` directory, as defined in `client/vite.config.ts` and `client/tsconfig.app.json`. Using relative paths also worked but aliases are preferred for consistency.
+        3.  Ensure React versions align with library peer dependencies (React 18 was required here).
+        4.  Include a clean install step in the Netlify build command (`rm -rf client/node_modules client/package-lock.json && npm install --prefix client`) to prevent stale dependencies from causing issues.
+
+*   **Chakra UI v3 Build/Type Errors:**
+    *   If using Chakra UI v3 (`@chakra-ui/react@^3`), ensure the correct provider setup in `main.tsx`: `<ChakraProvider value={defaultSystem}>`. Remove unused v3 dependencies (`@emotion/styled`, `framer-motion`). Address prop changes (e.g., `gap` instead of `spacing`, use component slots like `Alert.Root`).
+
+## 7. Project Structure Overview (Conceptual)
+
+```
+.
